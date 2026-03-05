@@ -1,16 +1,52 @@
 using UnityEngine;
 
-public class Lever : MonoBehaviour, IInteractable
+public class Lever : MonoBehaviour
 {
-    public System.Action OnActivated;
+    public GameObject door;
+    public GameObject interactionUI;
 
-    private bool isActivated;
+    private bool playerInRange = false;
+    private bool activated = false;
 
-    public void Interact()
+    void Start()
     {
-        if (isActivated) return;
+        interactionUI.SetActive(false);
+    }
 
-        isActivated = true;
-        OnActivated?.Invoke();
+    void Update()
+    {
+        if (playerInRange && !activated && Input.GetKeyDown(KeyCode.E))
+        {
+            ActivateLever();
+        }
+    }
+
+    void ActivateLever()
+    {
+        activated = true;
+        interactionUI.SetActive(false);
+
+        if (door != null)
+        {
+            door.SetActive(false);
+        }
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Player") && !activated)
+        {
+            playerInRange = true;
+            interactionUI.SetActive(true);
+        }
+    }
+
+    void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            playerInRange = false;
+            interactionUI.SetActive(false);
+        }
     }
 }
