@@ -18,7 +18,6 @@ public class EnemyController : MonoBehaviour
     private Rigidbody2D rb;
     private Animator animator;
     private SpriteRenderer sprite;
-
     private Transform player;
 
     private int currentHealth;
@@ -31,14 +30,15 @@ public class EnemyController : MonoBehaviour
         animator = GetComponent<Animator>();
         sprite = GetComponent<SpriteRenderer>();
 
-        player = FindFirstObjectByType<PlayerController>().transform;
+        PlayerController p = FindFirstObjectByType<PlayerController>();
+        if (p != null) player = p.transform;
 
         currentHealth = maxHealth;
     }
 
     private void Update()
     {
-        if (isDead) return;
+        if (isDead || player == null) return;
 
         attackTimer -= Time.deltaTime;
 
@@ -66,25 +66,23 @@ public class EnemyController : MonoBehaviour
 
         rb.linearVelocity = direction * moveSpeed;
 
-        if (direction.x > 0)
-            sprite.flipX = false;
-        else if (direction.x < 0)
-            sprite.flipX = true;
+        if (direction.x > 0) sprite.flipX = false;
+        if (direction.x < 0) sprite.flipX = true;
     }
 
     private void Attack()
     {
         rb.linearVelocity = Vector2.zero;
 
-        if (attackTimer > 0) return;
+        if (attackTimer > 0f) return;
+
+        attackTimer = attackCooldown;
 
         animator.SetTrigger("Attack");
 
-        PlayerController playerController = player.GetComponent<PlayerController>();
-        if (playerController != null)
-            playerController.TakeDamage(damage);
-
-        attackTimer = attackCooldown;
+        PlayerController pc = player.GetComponent<PlayerController>();
+        if (pc != null)
+            pc.TakeDamage(damage);
     }
 
     public void TakeDamage(int amount)
