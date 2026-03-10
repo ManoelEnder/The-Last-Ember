@@ -25,6 +25,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private GameObject gameOverPanel;
 
     private Rigidbody2D rb;
+    private Animator animator;
+    private SpriteRenderer spriteRenderer;
 
     private Vector2 movement;
     private Vector2 lastDirection = Vector2.down;
@@ -36,6 +38,9 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+
         currentHealth = maxHealth;
 
         if (healthBar != null)
@@ -54,6 +59,7 @@ public class PlayerController : MonoBehaviour
         HandleAttack();
         HandleInteraction();
         HandleInvulnerability();
+        UpdateAnimation();
     }
 
     private void FixedUpdate()
@@ -70,6 +76,20 @@ public class PlayerController : MonoBehaviour
 
         if (movement != Vector2.zero)
             lastDirection = movement;
+    }
+
+    private void UpdateAnimation()
+    {
+        if (animator == null) return;
+
+        animator.SetFloat("MoveX", movement.x);
+        animator.SetFloat("MoveY", movement.y);
+        animator.SetFloat("Speed", movement.sqrMagnitude);
+
+        if (movement.x > 0)
+            spriteRenderer.flipX = false;
+        else if (movement.x < 0)
+            spriteRenderer.flipX = true;
     }
 
     private void HandleAttack()
