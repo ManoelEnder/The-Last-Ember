@@ -10,4 +10,4 @@ public class Door : MonoBehaviour
         doorCollider.enabled = false;
         doorVisual.SetActive(false);
     }
-}
+}   
