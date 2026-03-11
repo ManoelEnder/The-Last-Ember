@@ -11,6 +11,7 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private int damage = 1;
     [SerializeField] private float attackRange = 1f;
     [SerializeField] private float attackCooldown = 1f;
+    [SerializeField] private float attackDelay = 0.5f;
 
     [Header("Health")]
     [SerializeField] private int maxHealth = 3;
@@ -80,9 +81,21 @@ public class EnemyController : MonoBehaviour
 
         animator.SetTrigger("Attack");
 
-        PlayerController pc = player.GetComponent<PlayerController>();
-        if (pc != null)
-            pc.TakeDamage(damage);
+        Invoke(nameof(DealDamage), attackDelay);
+    }
+
+    private void DealDamage()
+    {
+        if (player == null) return;
+
+        float distance = Vector2.Distance(transform.position, player.position);
+
+        if (distance <= attackRange)
+        {
+            PlayerController pc = player.GetComponent<PlayerController>();
+            if (pc != null)
+                pc.TakeDamage(damage);
+        }
     }
 
     public void TakeDamage(int amount)

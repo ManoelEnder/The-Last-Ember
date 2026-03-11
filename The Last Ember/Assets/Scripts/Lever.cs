@@ -3,6 +3,7 @@ using UnityEngine;
 public class Lever : MonoBehaviour
 {
     public GameObject door;
+    public GameObject doorB;
     public GameObject interactionUI;
 
     private bool playerInRange = false;
@@ -29,6 +30,11 @@ public class Lever : MonoBehaviour
         if (door != null)
         {
             door.SetActive(false);
+        }
+
+        if (doorB != null)
+        {
+            doorB.SetActive(true);
         }
     }
 

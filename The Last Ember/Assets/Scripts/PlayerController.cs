@@ -24,6 +24,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Slider healthBar;
     [SerializeField] private GameObject gameOverPanel;
 
+    [SerializeField] private GameObject sword;
+    [SerializeField] private float attackDuration = 0.2f;
+    [SerializeField] private float attackCooldown = 0.4f;
+
+    private float attackTimer;
+
     private Rigidbody2D rb;
     private Animator animator;
     private SpriteRenderer spriteRenderer;
@@ -60,6 +66,7 @@ public class PlayerController : MonoBehaviour
         HandleInteraction();
         HandleInvulnerability();
         UpdateAnimation();
+        attackTimer -= Time.deltaTime;
     }
 
     private void FixedUpdate()
@@ -94,20 +101,20 @@ public class PlayerController : MonoBehaviour
 
     private void HandleAttack()
     {
-        if (!Input.GetKeyDown(KeyCode.Space)) return;
+        if (!Input.GetMouseButtonDown(0)) return;
 
-        RaycastHit2D hit = Physics2D.Raycast(
-            transform.position,
-            lastDirection,
-            attackRange,
-            enemyLayer
-        );
+        if (attackTimer > 0f) return;
 
-        if (hit.collider == null) return;
+        attackTimer = attackCooldown;
 
-        EnemyController enemy = hit.collider.GetComponent<EnemyController>();
-        if (enemy != null)
-            enemy.TakeDamage(attackDamage);
+        sword.SetActive(true);
+
+        Invoke(nameof(HideSword), attackDuration);
+    }
+
+    private void HideSword()
+    {
+        sword.SetActive(false);
     }
 
     private void HandleInteraction()
