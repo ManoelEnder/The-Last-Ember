@@ -24,12 +24,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Slider healthBar;
     [SerializeField] private GameObject gameOverPanel;
 
-    [SerializeField] private GameObject sword;
-    [SerializeField] private float attackDuration = 0.2f;
-    [SerializeField] private float attackCooldown = 0.4f;
-
-    private float attackTimer;
-
     private Rigidbody2D rb;
     private Animator animator;
     private SpriteRenderer spriteRenderer;
@@ -62,11 +56,9 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         HandleMovement();
-        HandleAttack();
         HandleInteraction();
         HandleInvulnerability();
         UpdateAnimation();
-        attackTimer -= Time.deltaTime;
     }
 
     private void FixedUpdate()
@@ -97,24 +89,6 @@ public class PlayerController : MonoBehaviour
             spriteRenderer.flipX = false;
         else if (movement.x < 0)
             spriteRenderer.flipX = true;
-    }
-
-    private void HandleAttack()
-    {
-        if (!Input.GetMouseButtonDown(0)) return;
-
-        if (attackTimer > 0f) return;
-
-        attackTimer = attackCooldown;
-
-        sword.SetActive(true);
-
-        Invoke(nameof(HideSword), attackDuration);
-    }
-
-    private void HideSword()
-    {
-        sword.SetActive(false);
     }
 
     private void HandleInteraction()
@@ -158,6 +132,17 @@ public class PlayerController : MonoBehaviour
 
         isInvulnerable = true;
         invulnerabilityTimer = invulnerabilityTime;
+    }
+
+    public void Heal(int amount)
+    {
+        currentHealth += amount;
+
+        if (currentHealth > maxHealth)
+            currentHealth = maxHealth;
+
+        if (healthBar != null)
+            healthBar.value = currentHealth;
     }
 
     private void Die()
