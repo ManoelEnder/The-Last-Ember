@@ -2,22 +2,30 @@ using UnityEngine;
 
 public class PressurePlate : MonoBehaviour
 {
-    public System.Action OnPressed;
-    public System.Action OnReleased;
+    public Door door;
+    public static int platesPressed = 0;
+    public static int platesRequired = 3;
 
-    private int objectsOnPlate;
+    private bool pressed = false;
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    void OnTriggerEnter2D(Collider2D other)
     {
-        objectsOnPlate++;
-        OnPressed?.Invoke();
+        if (!pressed && (other.CompareTag("Box") || other.CompareTag("Player")))
+        {
+            pressed = true;
+            platesPressed++;
+
+            if (platesPressed >= platesRequired)
+                door.Open();
+        }
     }
 
-    private void OnTriggerExit2D(Collider2D collision)
+    void OnTriggerExit2D(Collider2D other)
     {
-        objectsOnPlate--;
-
-        if (objectsOnPlate <= 0)
-            OnReleased?.Invoke();
+        if (pressed && (other.CompareTag("Box") || other.CompareTag("Player")))
+        {
+            pressed = false;
+            platesPressed--;
+        }
     }
 }

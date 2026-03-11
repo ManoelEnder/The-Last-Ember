@@ -2,21 +2,22 @@ using UnityEngine;
 
 public class Lever : MonoBehaviour
 {
-    public GameObject door;
+    public GameObject doorA;
     public GameObject doorB;
     public GameObject interactionUI;
 
     private bool playerInRange = false;
-    private bool activated = false;
+    private bool state = false;
 
     void Start()
     {
-        interactionUI.SetActive(false);
+        if (interactionUI != null)
+            interactionUI.SetActive(false);
     }
 
     void Update()
     {
-        if (playerInRange && !activated && Input.GetKeyDown(KeyCode.E))
+        if (playerInRange && Input.GetKeyDown(KeyCode.E))
         {
             ActivateLever();
         }
@@ -24,26 +25,23 @@ public class Lever : MonoBehaviour
 
     void ActivateLever()
     {
-        activated = true;
-        interactionUI.SetActive(false);
+        state = !state;
 
-        if (door != null)
-        {
-            door.SetActive(false);
-        }
+        if (doorA != null)
+            doorA.SetActive(!state);
 
         if (doorB != null)
-        {
-            doorB.SetActive(true);
-        }
+            doorB.SetActive(state);
     }
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player") && !activated)
+        if (other.CompareTag("Player"))
         {
             playerInRange = true;
-            interactionUI.SetActive(true);
+
+            if (interactionUI != null)
+                interactionUI.SetActive(true);
         }
     }
 
@@ -52,7 +50,9 @@ public class Lever : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             playerInRange = false;
-            interactionUI.SetActive(false);
+
+            if (interactionUI != null)
+                interactionUI.SetActive(false);
         }
     }
 }
